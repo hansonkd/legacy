@@ -1,26 +1,36 @@
 from django.db import models
 from localflavor.us.models import USStateField
 from django_countries.fields import CountryField
+from phonenumber_field.modelfields import PhoneNumberField
 
 from fido.models import ShortTextField
 
 from django.contrib.auth.models import AbstractUser
 
 
+
 class User(AbstractUser):
-    pass
+    phone_number = PhoneNumberField()
 
 
-class Identity(models.Model):
+
+class LegalEntity(models.Model):
+    class EntityChoices(models.TextChoices):
+        ORGANIZATION = "organization"
+        PERSON = "person"
+    entity_type = ShortTextField(choices=EntityChoices.choices)
     admin = models.ForeignKey(User, on_delete=models.PROTECT, null=True, blank=True)
     legal_name = ShortTextField()
+    first_name = ShortTextField()
+    middle_initial = ShortTextField()
+    last_name = ShortTextField()
     tax_id = ShortTextField()
 
+    phone_number = PhoneNumberField()
 
-class Location(models.Model):
-    identity = models.ForeignKey(Identity, on_delete=models.PROTECT)
-    primary = models.BooleanField()
 
+
+class Address(models.Model):
     address_1 = ShortTextField("address", max_length=128, null=True, blank=True)
     address_2 = ShortTextField("address cont'd", max_length=128, null=True, blank=True)
 

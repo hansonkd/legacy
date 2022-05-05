@@ -34,6 +34,7 @@ INSTALLED_APPS = [
     'assets.apps.AssetsConfig',
     'identities.apps.IdentitiesConfig',
     'workflows.apps.WorkflowsConfig',
+    'phonenumber_field',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',

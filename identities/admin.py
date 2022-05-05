@@ -8,11 +8,11 @@ class UserAdmin(admin.ModelAdmin):
     pass
 
 
-@admin.register(Identity)
-class IdentityAdmin(admin.ModelAdmin):
+@admin.register(LegalEntity)
+class LegalEntityAdmin(admin.ModelAdmin):
     pass
 
 
-@admin.register(Location)
-class LocationAdmin(admin.ModelAdmin):
+@admin.register(Address)
+class AddressAdmin(admin.ModelAdmin):
     pass

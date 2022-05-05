@@ -3,42 +3,14 @@ from workflows.models import *
 
 
 # Register your models here.
-@admin.register(Template)
-class TemplateAdmin(admin.ModelAdmin):
+@admin.register(TrustQuestionaire)
+class TrustQuestionaireAdmin(admin.ModelAdmin):
     pass
 
 
-@admin.register(TemplateRole)
-class TemplateRoleAdmin(admin.ModelAdmin):
+@admin.register(Gift)
+class GiftAdmin(admin.ModelAdmin):
     pass
 
 
-@admin.register(TemplateSection)
-class TemplateSectionAdmin(admin.ModelAdmin):
-    pass
-
-
-@admin.register(TemplateQuestion)
-class TemplateQuestionAdmin(admin.ModelAdmin):
-    pass
-
-
-@admin.register(TemplateChoice)
-class TemplateChoiceAdmin(admin.ModelAdmin):
-    pass
-
-
-@admin.register(Intake)
-class IntakeAdmin(admin.ModelAdmin):
-    pass
-
-
-@admin.register(IntakeSection)
-class IntakeSectionAdmin(admin.ModelAdmin):
-    pass
-
-
-@admin.register(IntakeResponse)
-class IntakeResponseAdmin(admin.ModelAdmin):
-    pass
 

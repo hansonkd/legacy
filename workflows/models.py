@@ -1,75 +1,99 @@
 from django.db import models
 
 from fido.models import ShortTextField, FidoModel
-from identities.models import Identity, User
+from identities.models import LegalEntity, User, Address
 
 from workflows.functions import *
 
 
-class Template(FidoModel):
-    functions = TemplateF
-    template_name = ShortTextField(max_length=200)
-    is_live = models.BooleanField()
+class DeclaredAsset(FidoModel):
+    manufacturer = ShortTextField()
+    model_number = ShortTextField()
+    description = ShortTextField()
+    unique_id = ShortTextField()
+    address = models.ForeignKey(Address, on_delete=models.PROTECT, null=True, blank=True)
+    location_description = ShortTextField()
 
 
-class TemplateRole(FidoModel):
-    class RoleChoices(models.TextChoices):
-        CLAIMABLE = "claimable"
-        KNOWN_USERS = "known_users"
-    functions = TemplateRoleF
-    role_name = ShortTextField(max_length=200)
-    role_type = ShortTextField(choices=RoleChoices.choices)
-    role_choices = models.ManyToManyField(User)
+
+class RoleInvitation(FidoModel):
+    class RelationshipChoices(models.TextChoices):
+        SPOUSE = "spouse"
+        CHILD = "child"
+        GRANDCHILD = "grandchild"
+        GREAT_GRANDCHILD = "great-grandchild"
+    onboarding_form = models.ForeignKey("workflows.TrustQuestionaire", on_delete=models.PROTECT)
+    first_name = ShortTextField()
+    middle_initial = ShortTextField()
+    last_name = ShortTextField()
+    
+    citizenship_status = models.BooleanField()
+    address =  models.ForeignKey(Address, on_delete=models.PROTECT)
+    relationship = ShortTextField(choices=RelationshipChoices.choices)
+
+    # one of
+    below_age_of_25 = models.BooleanField()
+    date_of_birth = models.DateField(null=True, blank=True)
 
 
-class TemplateSection(FidoModel):
-    functions = TemplateSectionF
-    template = models.ForeignKey(Template, on_delete=models.PROTECT)
-    position = models.IntegerField()
-    section_name = ShortTextField(max_length=200)
-    assignee_role = models.ForeignKey(TemplateRole, on_delete=models.PROTECT)
+
+class Gift(FidoModel):
+    onboarding_form = models.ForeignKey("workflows.TrustQuestionaire", on_delete=models.PROTECT,)
+    asset = models.ForeignKey(DeclaredAsset, on_delete=models.PROTECT, null=True, blank=True)
+    beneficiary = models.ForeignKey(RoleInvitation, on_delete=models.PROTECT, null=True, blank=True)
 
 
-class TemplateQuestion(FidoModel):
-    class QuestionChoices(models.TextChoices):
-        CHECKBOX = "checkbox"
-        MULTIPLE = "multiple"
-        FREEFORM = "freeform"
-        SIGNATURE = "signature"
-    functions = TemplateQuestionF
-    question_name = ShortTextField(max_length=200)
-    question_type = ShortTextField(choices=QuestionChoices.choices)
-    position = models.IntegerField()
+
+class TrustQuestionaire(FidoModel):
+    identity = models.ForeignKey(LegalEntity, on_delete=models.PROTECT)
+
+    previously_married = models.BooleanField(null=True, blank=True)
+    spouse = models.ForeignKey(RoleInvitation, on_delete=models.PROTECT, null=True, blank=True)
+
+    do_you_have_children = models.BooleanField(null=True, blank=True)
+    do_you_have_grandchildren = models.BooleanField(null=True, blank=True)
+    do_you_have_great_grandchildren = models.BooleanField(null=True, blank=True)
+
+    real_estate = models.BooleanField(null=True, blank=True)
+    bank_accounts = models.BooleanField(null=True, blank=True)
+    retirement_accounts = models.BooleanField(null=True, blank=True)
+    brokerage_accounts = models.BooleanField(null=True, blank=True)
+    stock = models.BooleanField(null=True, blank=True)
+    warrants = models.BooleanField(null=True, blank=True)
+    bonds = models.BooleanField(null=True, blank=True)
+    stock_options = models.BooleanField(null=True, blank=True)
+    mutual_funds = models.BooleanField(null=True, blank=True)
+    reits = models.BooleanField(null=True, blank=True)
+    vehicles = models.BooleanField(null=True, blank=True)
+    notes_or_debt = models.BooleanField(null=True, blank=True)
+    safe_deposit_boxes = models.BooleanField(null=True, blank=True)
+    business_interests = models.BooleanField(null=True, blank=True)
+    patents_or_copywrites = models.BooleanField(null=True, blank=True)
+    precious_metals_or_stones = models.BooleanField(null=True, blank=True)
+    valuable_art_furniture_antique_collectibles = models.BooleanField(null=True, blank=True)
 
 
-class TemplateChoice(FidoModel):
-    functions = TemplateChoiceF
-    question = models.ForeignKey(TemplateQuestion, on_delete=models.PROTECT)
-    choice_text = models.TextField()
+    disinherit_anyone = models.BooleanField(null=True, blank=True)
+    likely_to_contest_will = models.BooleanField(null=True, blank=True)
+    governmental_assistance = models.BooleanField(null=True, blank=True)
+    special_needs_disabilities_or_addictions = models.BooleanField(null=True, blank=True)
+    nursing_home = models.BooleanField(null=True, blank=True)
+    creditor_problems = models.BooleanField(null=True, blank=True)
+    divorce_a_concern = models.BooleanField(null=True, blank=True)
+    specific_family_concerns = models.BooleanField(null=True, blank=True)
 
 
-class Intake(FidoModel):
-    functions = IntakeF
-    template = models.ForeignKey(Template, on_delete=models.PROTECT)
+    continuing_obligations_from_divorce = models.BooleanField(null=True, blank=True)
+    prenuptial_or_postnuptial_agreement = models.BooleanField(null=True, blank=True)
+    gift_tax_returns = models.BooleanField(null=True, blank=True)
+    oil_gas_mineral_rights = models.BooleanField(null=True, blank=True)
+    water_rights = models.BooleanField(null=True, blank=True)
+    timeshare_vacation_home = models.BooleanField(null=True, blank=True)
+    family_business = models.BooleanField(null=True, blank=True)
+    beneficiary_of_existing_trust = models.BooleanField(null=True, blank=True)
+    combined_estate_over_20m = models.BooleanField(null=True, blank=True)
+    long_temr_care_policy = models.BooleanField(null=True, blank=True)
 
+    is_there_beneficiary_assign_asset = models.BooleanField(null=True, blank=True)
+    is_there_beneficiary_assign_dollar = models.BooleanField(null=True, blank=True)
 
-class IntakeRoleInvitation(FidoModel):
-    functions = IntakeRoleInvitationF
-    intake = models.ForeignKey(Intake, on_delete=models.PROTECT)
-    role = models.ForeignKey(TemplateRole, on_delete=models.PROTECT)
-    invite_name = ShortTextField(max_length=200)
-    invite_email = models.EmailField(max_length=512)
-    claimed_user = models.ForeignKey(User, on_delete=models.PROTECT, null=True, blank=True)
-
-
-class IntakeSection(FidoModel):
-    functions = IntakeSectionF
-    template_section = models.ForeignKey(TemplateSection, on_delete=models.PROTECT)
-    assignees = models.ManyToManyField(User)
-
-
-class IntakeResponse(FidoModel):
-    functions = IntakeResponseF
-    template_question = models.ForeignKey(TemplateQuestion, on_delete=models.PROTECT)
-    selection = models.ForeignKey(TemplateChoice, on_delete=models.PROTECT, null=True, blank=True)
-    data = models.TextField()
